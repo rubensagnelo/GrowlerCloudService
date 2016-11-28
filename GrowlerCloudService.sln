@@ -23,6 +23,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "estrutura.growler", "estrut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "proxy.database", "proxy.database\proxy.database.csproj", "{777E555B-AFCE-41A0-B51C-8E2302359497}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E3BE5FD6-0EB1-4F23-BA6F-163E1E366FEE}"
+	ProjectSection(SolutionItems) = preProject
+		ScriptCreateDB.sql = ScriptCreateDB.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
