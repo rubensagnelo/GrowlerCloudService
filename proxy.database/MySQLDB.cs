@@ -22,28 +22,44 @@ namespace proxy.database
 
         private static MySql.Data.MySqlClient.MySqlConnection db;
         private static MySql.Data.MySqlClient.MySqlDataReader reader = null;
+        private static MySql.Data.MySqlClient.MySqlConnection mconn = null;
 
 
         private static MySqlConnection dbMySQL()
         {
             MySql.Data.MySqlClient.MySqlConnection result = null;
-            MySql.Data.MySqlClient.MySqlConnection mconn = null;
+
+            //try
+            //{
+            //    if (mconn != null)
+            //        mconn.Close();
+            //}
+            //catch (Exception) { }
+
+
+#if DEBUG
+             string connStr = String.Format("server={0};user id={1}; password={2}; database=GROWLERDB; pooling=false",
+                            "localhost", "sysdba", "masterkey");
+
+
+            // string connStr = "Database=growlerdb;Data Source=us-cdbr-azure-east2-d.cloudapp.net;User Id=b02a40d6180f19;Password=20c06385";
+#else
+
+            string connStr = "Database=growlerdb;Data Source=us-cdbr-azure-east2-d.cloudapp.net;User Id=b02a40d6180f19;Password=20c06385";
+
+#endif
+
 
             try
             {
-                if (mconn != null)
-                    mconn.Close();
-            }
-            catch (Exception) { }
+                if (mconn==null || mconn.State!= ConnectionState.Open)
+                    mconn = new MySqlConnection(connStr);
 
+                if (mconn.State == ConnectionState.Closed)
+                {
+                    mconn.Open();
+                }
 
-            string connStr = String.Format("server={0};user id={1}; password={2}; database=GROWLERDB; pooling=false",
-                "localhost", "sysdba", "masterkey");
-
-            try
-            {
-                mconn = new MySqlConnection(connStr);
-                mconn.Open();
                 result = mconn;
             }
             catch (MySqlException ex)
@@ -60,6 +76,7 @@ namespace proxy.database
 
         public static struturaExecSQL execReader(string sql)
         {
+            Close();
             db = dbMySQL();
 
             struturaExecSQL result = new struturaExecSQL();

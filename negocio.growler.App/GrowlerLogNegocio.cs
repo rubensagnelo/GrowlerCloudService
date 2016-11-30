@@ -60,26 +60,36 @@ namespace negocio.growler.App
             Growlers grls = new Growlers();
             List<Growler> lgr = new List<Growler>();
             String sql = "";
-            String vlr = "";
             EstruturaRaizGrowlers result = new EstruturaRaizGrowlers();
 
             try
             {
+
                 sql = "SELECT IDGROWLER FROM GROWLER WHERE IDCMON=1 ORDER BY IDGROWLER";
                 //System.out.println("SQL >" + sql);
                 struturaExecSQL resultSQL = MySQLDB.execReader(sql);
                 //java.sql.ResultSet rsIds = statement().executeQuery(sql);
                 //System.out.println("info> Sucesso");
-                vlr = "";
+                
 
-
+                List<string> ls = new List<string>();
                 while (resultSQL.Reader.Read())
                 {
+                    ls.Add(resultSQL.Reader["IDGROWLER"].ToString());
+                }
 
-                    vlr = resultSQL.Reader["IDGROWLER"].ToString();
+                MySQLDB.Close();
+
+                string vlr = "";
+
+                foreach (var item in ls)
+                {
+
+                    vlr = item.ToString(); //resultSQL.Reader["IDGROWLER"].ToString();
                     sql = "SELECT IDGROWLER, TMPGROWLER, BATGROWLER,  DTALOGGROWLER FROM GROWLER_LOG WHERE IDGROWLER=" + vlr + " ORDER BY DTALOGGROWLER DESC LIMIT 1";
                     //sql = "SELECT IDGROWLER, TMPGROWLER, BATGROWLER, MAX(DTALOGGROWLER) DTALOGGROWLER FROM GROWLER_LOG WHERE IDGROWLER=" + vlr;
                     //System.out.println("SQL >" + sql);
+                    MySQLDB.Close();
                     struturaExecSQL sre = MySQLDB.execReader(sql);
                     System.Data.Common.DbDataReader rs = sre.Reader;
                     //System.out.println("info> Sucesso");

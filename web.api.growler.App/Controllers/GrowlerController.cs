@@ -8,25 +8,48 @@ using estrutura.growler;
 using estrutura.growler.App;
 using negocio.growler.App;
 
-
 namespace web.api.growler.App.Controllers
 {
+    [RoutePrefix("api/growler")]
     public class GrowlerController : ApiController
     {
 
 
-        // DELETE api/values/5
-        public HttpResponseMessage Delete(String id)
+        [System.Web.Http.HttpGet]
+        public HttpResponseMessage LerGarrafas()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, GrowlerNegocio.EsvaziarGrowler(id), "application/json");
+            return execResponse(GrowlerLogNegocio.lergarrafas());
         }
 
-        // PUT api/values/5
-        public HttpResponseMessage Put(GrowlerIni value)
+        [System.Web.Http.HttpGet]
+        public HttpResponseMessage ConsultarGrowlerAtual(String id)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, GrowlerNegocio.iniciargrowler(value), "application/json");
+            return execResponse(GrowlerLogNegocio.ConsultarGrowlerAtual(id));
         }
 
+
+        [HttpPost]
+        public HttpResponseMessage Iniciargrowler(GrowlerIni value)
+        {
+            return execResponse(GrowlerNegocio.iniciargrowler(value));
+        }
+
+        [HttpDelete]
+        public HttpResponseMessage EsvaziarGrowler(String id)
+        {
+            return execResponse(GrowlerNegocio.EsvaziarGrowler(id));
+        }
+
+
+
+        private HttpResponseMessage execResponse(EstruturaRaiz value, string media = "application/json")
+        {
+            HttpStatusCode st = HttpStatusCode.OK;
+            if (value.IdcErr != 0)
+                st = HttpStatusCode.BadRequest;
+
+            return Request.CreateResponse(st, value, media);
+        }
 
     }
 }
