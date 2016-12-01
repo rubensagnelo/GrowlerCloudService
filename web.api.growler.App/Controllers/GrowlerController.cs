@@ -27,6 +27,11 @@ namespace web.api.growler.App.Controllers
             return execResponse(GrowlerLogNegocio.ConsultarGrowlerAtual(id));
         }
 
+        [System.Web.Http.HttpGet]
+        public HttpResponseMessage ConsultarHistoricoGrowler(String id)
+        {
+            return execResponse(GrowlerLogNegocio.ConsultarHistoricoGrowler(id));
+        }
 
         [HttpPost]
         public HttpResponseMessage Iniciargrowler(GrowlerIni value)
