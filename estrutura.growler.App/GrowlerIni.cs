@@ -12,6 +12,8 @@ namespace estrutura.growler.App
         public String IdGrowler;
         public String TempIdeal;
         public String IndNotficacaoTemp;
+        public String IdNotificacao;
+
 
 
         public GrowlerIni()

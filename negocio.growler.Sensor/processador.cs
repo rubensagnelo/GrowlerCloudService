@@ -21,7 +21,7 @@ namespace negocio.growler.Sensor
                 sql.Append("INSERT INTO GROWLER_LOG ");
                 sql.Append("(IDGROWLER, TMPGROWLER, BATGROWLER, DTALOGGROWLER) ");
                 sql.Append("VALUES(");
-                sql.Append(ent.id).Append(", ");
+                sql.Append("'").Append(ent.id).Append("'").Append(", ");
                 sql.Append(ent.temperatura).Append(", ");
                 sql.Append(ent.bateria).Append(", ");
                 sql.Append(" CURRENT_TIMESTAMP)");

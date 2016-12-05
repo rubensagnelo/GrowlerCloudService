@@ -7,6 +7,10 @@ using System.Web.Http;
 using estrutura.growler;
 using estrutura.growler.App;
 using negocio.growler.App;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace web.api.growler.App.Controllers
 {
@@ -36,14 +40,37 @@ namespace web.api.growler.App.Controllers
         [HttpPost]
         public HttpResponseMessage Iniciargrowler(GrowlerIni value)
         {
-            return execResponse(GrowlerNegocio.iniciargrowler(value));
+
+            HttpResponseMessage result = execResponse(GrowlerNegocio.iniciargrowler(value));
+
+            try
+            {
+                AdicionarMensagem("notificacaogrowler", JsonConvert.SerializeObject(value));
+            }
+            catch (Exception ex)
+            {}
+
+            return result;
         }
+
+
+        [HttpPut]
+        public HttpResponseMessage SolicitaMonitoramentoGrowler(GrowlerMon value)
+        {
+
+            HttpResponseMessage result = execResponse(GrowlerNegocio.SolicitarMonitoramentoGrowler(value));
+
+            return result;
+        }
+
 
         [HttpDelete]
         public HttpResponseMessage EsvaziarGrowler(String id)
         {
             return execResponse(GrowlerNegocio.EsvaziarGrowler(id));
         }
+
+
 
 
 
@@ -55,6 +82,49 @@ namespace web.api.growler.App.Controllers
 
             return Request.CreateResponse(st, value, media);
         }
+
+
+        #region código duplicado da bibliotecapara resolver o problema de referencia do Azure
+
+        public static string getConfig(string key)
+        {
+            string sufix = ".DEV";
+#if !DEBUG
+            sufix = ".PRD";
+#endif
+            return System.Configuration.ConfigurationManager.AppSettings[new StringBuilder(key).Append(sufix).ToString()].ToString();
+        }
+
+
+        private const string keyConnection = "AzureQueue";
+
+        private static void AdicionarMensagem(string queName, string message)
+        {
+            CloudQueue queue = GetQueue(queName);
+            queue.AddMessage(new CloudQueueMessage(message));
+        }
+
+        private static CloudQueue GetQueue(string queName)
+        {
+            CloudQueue Queue = null;
+            var connectionString = getConfig(keyConnection + "." + queName);
+            CloudStorageAccount cloudStorageAccount;
+            if (!CloudStorageAccount.TryParse(connectionString, out cloudStorageAccount))
+            {
+
+            }
+
+            var cloudQueueClient = cloudStorageAccount.CreateCloudQueueClient();
+            Queue = cloudQueueClient.GetQueueReference(queName);
+            // Note: Usually this statement can be executed once during application startup or maybe even never in the application.
+            //       A queue in Azure Storage is often considered a persistent item which exists over a long time.
+            //       Every time .CreateIfNotExists() is executed a storage transaction and a bit of latency for the call occurs.
+            Queue.CreateIfNotExists();
+            return Queue;
+        }
+
+        #endregion código duplicado da bibliotecapara resolver o problema de referencia do Azure
+
 
     }
 }

@@ -44,6 +44,7 @@
     <Compile Include="EstruturaRaizGrowler.cs" />
     <Compile Include="GrowlerIni.cs" />
     <Compile Include="Growler.cs" />
+    <Compile Include="GrowlerMon.cs" />
     <Compile Include="Growlers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -86,7 +86,7 @@ namespace negocio.growler.App
                 {
 
                     vlr = item.ToString(); //resultSQL.Reader["IDGROWLER"].ToString();
-                    sql = "SELECT IDGROWLER, TMPGROWLER, BATGROWLER,  DTALOGGROWLER FROM GROWLER_LOG WHERE IDGROWLER=" + vlr + " ORDER BY DTALOGGROWLER DESC LIMIT 1";
+                    sql = "SELECT IDGROWLER, TMPGROWLER, BATGROWLER,  DTALOGGROWLER FROM GROWLER_LOG WHERE IDGROWLER='" + vlr + "' ORDER BY DTALOGGROWLER DESC LIMIT 1";
                     //sql = "SELECT IDGROWLER, TMPGROWLER, BATGROWLER, MAX(DTALOGGROWLER) DTALOGGROWLER FROM GROWLER_LOG WHERE IDGROWLER=" + vlr;
                     //System.out.println("SQL >" + sql);
                     MySQLDB.Close();
@@ -156,7 +156,7 @@ namespace negocio.growler.App
             EstruturaRaizGrowlers result = new EstruturaRaizGrowlers();
             try
             {
-                string strSql = "SELECT IDGROWLER, TMPGROWLER, BATGROWLER, DTALOGGROWLER FROM GROWLER_LOG WHERE IDGROWLER=" + IdGrowler + " ORDER BY DTALOGGROWLER DESC ";
+                string strSql = "SELECT IDGROWLER, TMPGROWLER, BATGROWLER, DTALOGGROWLER FROM GROWLER_LOG WHERE IDGROWLER='" + IdGrowler + "' ORDER BY DTALOGGROWLER DESC ";
                 struturaExecSQL resultSQL = MySQLDB.execReader(strSql);
 
                 if (!resultSQL.erro)

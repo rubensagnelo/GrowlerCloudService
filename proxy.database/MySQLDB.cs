@@ -29,26 +29,7 @@ namespace proxy.database
         {
             MySql.Data.MySqlClient.MySqlConnection result = null;
 
-            //try
-            //{
-            //    if (mconn != null)
-            //        mconn.Close();
-            //}
-            //catch (Exception) { }
-
-
-#if DEBUG
-             string connStr = String.Format("server={0};user id={1}; password={2}; database=GROWLERDB; pooling=false",
-                            "localhost", "sysdba", "masterkey");
-
-
-            // string connStr = "Database=growlerdb;Data Source=us-cdbr-azure-east2-d.cloudapp.net;User Id=b02a40d6180f19;Password=20c06385";
-#else
-
-            string connStr = "Database=growlerdb;Data Source=us-cdbr-azure-east2-d.cloudapp.net;User Id=b02a40d6180f19;Password=20c06385";
-
-#endif
-
+            string connStr = util.configTools.getConfig("mysqldb");
 
             try
             {

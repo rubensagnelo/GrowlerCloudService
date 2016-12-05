@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using estrutura.growler;
 using estrutura.growler.App;
 using proxy.database;
+using Newtonsoft.Json;
 
 namespace negocio.growler.App
 {
@@ -18,7 +19,7 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler;
+                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER='" + idGrowler+"'";
                 //System.out.println("SQL >" + sql);
                 //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
                 struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
@@ -45,7 +46,35 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "UPDATE GROWLER SET IDCMON=0 WHERE IDGROWLER=" + idGrowler;
+                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER='" + idGrowler + "'";
+                //System.out.println("SQL >" + sql);
+                //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+                if (resultSQL.erro)
+                    throw new Exception(resultSQL.mensagemDetalhada);
+                //System.out.println("info> Sucesso");
+            }
+            catch (Exception ex)
+            {
+                //System.out.println("info> ERRO");
+                //showSQLException(e);
+                //e.printStackTrace();
+                result.CodErr = 4;
+                result.ExceptionMsg = ex.Message;
+                result.IdcErr = 1;
+                result.msg = "Não foi possível excluir a solicitação de monitoramento para o Growler " + idGrowler + ".";
+                return result;
+            }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
+
+
+            try
+            {
+                sql = "UPDATE GROWLER SET IDCMON=0 WHERE IDGROWLER='" + idGrowler +"'";
                 //System.out.println("SQL >" + sql);
                 //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
                 //System.out.println("info> Sucesso");
@@ -84,7 +113,7 @@ namespace negocio.growler.App
             String sql = "";
             try
             {
-                sql = "DELETE FROM GROWLER WHERE IDGROWLER=" + grl.IdGrowler;
+                sql = "DELETE FROM GROWLER WHERE IDGROWLER='" + grl.IdGrowler+"'";
                 //System.out.println("SQL >" + sql);
                 //statement().executeUpdate(sql);
                 //System.out.println("info> Sucesso");
@@ -107,7 +136,7 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "INSERT INTO GROWLER (IDGROWLER, VLRTMPIDEGROWLER, IDCALATMP, IDCMON) VALUES (" + grl.IdGrowler + "," + grl.TempIdeal + "," + grl.IndNotficacaoTemp + ",1)";
+                sql = "INSERT INTO GROWLER (IDGROWLER, VLRTMPIDEGROWLER, IDCALATMP, IDCMON) VALUES ('" + grl.IdGrowler + "'," + grl.TempIdeal + "," + grl.IndNotficacaoTemp + ",1)";
                 //System.out.println("SQL >" + sql);
                 //statement().executeUpdate(sql);
                 //System.out.println("info> Sucesso");
@@ -132,7 +161,7 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + grl.IdGrowler;
+                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER='" + grl.IdGrowler+"'";
                 //System.out.println("SQL >" + sql);
                 //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
                 //System.out.println("info> Sucesso");
@@ -158,6 +187,109 @@ namespace negocio.growler.App
             return result;
 
         }
+
+
+        public static EstruturaRaiz ExcluirMonitoramento(string IdGrowler)
+        {
+            EstruturaRaiz result = new EstruturaRaiz();
+            String sql = "";
+
+            try
+            {
+                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER = '" + IdGrowler + "'";
+                //System.out.println("SQL >" + sql);
+                //statement().executeUpdate(sql);
+                //System.out.println("info> Sucesso");
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+                if (resultSQL.erro)
+                    throw new Exception(resultSQL.mensagemDetalhada);
+
+            }
+            catch (Exception ex)
+            {
+                //System.out.println("info> ERRO");
+                //showSQLException(e);
+                //e.printStackTrace();
+                //return "1";
+                result.CodErr = 6;
+                result.ExceptionMsg = ex.Message;
+                result.IdcErr = 1;
+                result.msg = "Não foi possível excluir a solicitação de monitoração do Growler " + IdGrowler + ".";
+                return result;
+
+            }
+
+            return result;
+        }
+
+
+        public static EstruturaRaiz SolicitarMonitoramentoGrowler(GrowlerMon value)
+        {
+            EstruturaRaiz result = new EstruturaRaiz();
+            String sql = "";
+
+            try
+            {
+                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER = '" + value.IdGrowler + "'";
+                //System.out.println("SQL >" + sql);
+                //statement().executeUpdate(sql);
+                //System.out.println("info> Sucesso");
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+                if (resultSQL.erro)
+                    throw new Exception(resultSQL.mensagemDetalhada);
+
+            }
+            catch (Exception ex)
+            {
+                //System.out.println("info> ERRO");
+                //showSQLException(e);
+                //e.printStackTrace();
+                //return "1";
+                result.CodErr = 6;
+                result.ExceptionMsg = ex.Message;
+                result.IdcErr = 1;
+                result.msg = "Não foi possível excluir a solicitação de monitoração do Growler " + value.IdGrowler + ".";
+                return result;
+
+            }
+
+
+            try
+            {
+                sql = "INSERT INTO GROWLER_MON (IDGROWLER, DTAGRAVACAO, IDNOTIFICACAO) VALUES ('" + value.IdGrowler + "', CURRENT_TIMESTAMP, '" + value.IdNotificacao + "')";
+                //System.out.println("SQL >" + sql);
+                //statement().executeUpdate(sql);
+                //System.out.println("info> Sucesso");
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+                if (resultSQL.erro)
+                    throw new Exception(resultSQL.mensagemDetalhada);
+
+            }
+            catch (Exception ex)
+            {
+                //System.out.println("info> ERRO");
+                //showSQLException(e);
+                //e.printStackTrace();
+                //return "1";
+                result.CodErr = 6;
+                result.ExceptionMsg = ex.Message;
+                result.IdcErr = 1;
+                result.msg = "Não foi possível registrar a solicitação de monitoração do Growler " + value.IdGrowler + ".";
+                return result;
+
+            }
+
+            
+            
+            
+
+            return result;
+
+
+        }
+
+
+        
 
 
     }
