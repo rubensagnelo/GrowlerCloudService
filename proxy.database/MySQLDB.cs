@@ -24,12 +24,13 @@ namespace proxy.database
         private static MySql.Data.MySqlClient.MySqlDataReader reader = null;
         private static MySql.Data.MySqlClient.MySqlConnection mconn = null;
 
+        public static string connStr { get { return util.configTools.getConfig("mysqldb");  } }
 
         private static MySqlConnection dbMySQL()
         {
             MySql.Data.MySqlClient.MySqlConnection result = null;
 
-            string connStr = util.configTools.getConfig("mysqldb");
+            
 
             try
             {

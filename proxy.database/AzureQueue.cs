@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.Azure.NotificationHubs;
 
 
 
@@ -36,6 +37,8 @@ namespace proxy.database
             return Queue;
         }
 
+
+
         public static void AdicionarMensagem(string queName, string message)
         {
            CloudQueue queue = GetQueue(queName);
@@ -57,6 +60,37 @@ namespace proxy.database
 
 
 
+        public static async Task<bool> SendNotificationAsync(string message, string idNotificacao)
+        {
+            string[] userTag = new string[1];
+            userTag[0] = "";
+
+            //dHjXf2hZ0rI: APA91bGJCNtMPugyVM8iqw06ZT - CV8MFk7WDIykM1iSgVvSXX2dIazjxajvKWYzIVnDib3pqcviPReTcmlfC0ikNgySgFCYKlsdqlpCmjWxilKeGO4NTJ8mzc_jIYn3zyXBGj0F_DsjL
+
+
+
+            string defaultFullSharedAccessSignature = util.configTools.getConfig("hubnotificacao");
+            string hubName = "hbPedidos";
+
+
+            NotificationHubClient _hub = NotificationHubClient.CreateClientFromConnectionString(defaultFullSharedAccessSignature, hubName);
+
+            NotificationOutcome outcome = null;
+
+            // Android
+            var notif = "{ \"data\" : {\"message\":\"" + message + " (idNotificacao=" + idNotificacao + ") " + "\"}}";
+            outcome = await _hub.SendGcmNativeNotificationAsync(notif, userTag);
+
+            if (outcome != null)
+            {
+                if (!((outcome.State == NotificationOutcomeState.Abandoned) ||
+                    (outcome.State == NotificationOutcomeState.Unknown)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 
 

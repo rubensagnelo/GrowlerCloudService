@@ -11,7 +11,7 @@ namespace util
 
         public static string getConfig(string key)
         {
-            string sufix = ".DEV";
+            string sufix = ".PRD";
 #if !DEBUG
             sufix = ".PRD";
 #endif

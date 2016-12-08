@@ -50,7 +50,7 @@ namespace workerRole.growler
         public override bool OnStart()
         {
             // Set the maximum number of concurrent connections
-            ServicePointManager.DefaultConnectionLimit = 30;
+            ServicePointManager.DefaultConnectionLimit = 60;
 
             // For information on handling configuration changes
             // see the MSDN topic at https://go.microsoft.com/fwlink/?LinkId=166357.
@@ -74,6 +74,8 @@ namespace workerRole.growler
             Trace.TraceInformation("workerRole.growler has stopped");
         }
 
+        private const int QtdTentativas = 60;
+
         private async Task RunAsync(CancellationToken cancellationToken)
         {
             String strmsgque = String.Empty;
@@ -92,16 +94,21 @@ namespace workerRole.growler
                     strmsgque = msgque.AsString;
                     GrowlerIni objque = JsonConvert.DeserializeObject<GrowlerIni>(strmsgque);
 
-                    if (TratarNotificacao(objque))
+                    if ((TratarNotificacao(objque)) || (msgque.DequeueCount >= QtdTentativas))
                     {
+                        if (msgque.DequeueCount >= QtdTentativas)
+                            Trace.WriteLine("Foram realizadas " + msgque.DequeueCount.ToString() + " apurações. Monitoramento será descartado.");
+
                         Trace.WriteLine("Excluindo queue " + idqueue + ".");
                         cloudQueue.DeleteMessage(msgque);
-                        Trace.WriteLine("Queue " + idqueue  + "Excluida.");
+                        Trace.WriteLine("Queue " + idqueue + "Excluida.");
                     }
+
 
                     Trace.WriteLine("Queue " + idqueue + " tratada.");
                     Trace.WriteLine("---------------------------------------------------------------");
 
+                    await Task.Delay(1000);
 
                 }
 
@@ -138,7 +145,7 @@ namespace workerRole.growler
 
                             Trace.WriteLine(msg);
 
-                            Task t = SendNotificationAsync(msg, gr.IdNotificacao);
+                            Task t = proxy.database.AzureQueue.SendNotificationAsync(msg, gr.IdNotificacao);
                             t.Wait();
                             result = true;
 
@@ -225,35 +232,38 @@ namespace workerRole.growler
         //}
 
 
-        private static NotificationHubClient _hub;
-        public async Task<bool> SendNotificationAsync(string message, string idNotificacao)
-        {
-            string[] userTag = new string[1];
-            userTag[0] = "";
+        //private static NotificationHubClient _hub;
+        //public async Task<bool> SendNotificationAsync(string message, string idNotificacao)
+        //{
+        //    string[] userTag = new string[1];
+        //    userTag[0] = "";
 
-            //dHjXf2hZ0rI: APA91bGJCNtMPugyVM8iqw06ZT - CV8MFk7WDIykM1iSgVvSXX2dIazjxajvKWYzIVnDib3pqcviPReTcmlfC0ikNgySgFCYKlsdqlpCmjWxilKeGO4NTJ8mzc_jIYn3zyXBGj0F_DsjL
+        //    //dHjXf2hZ0rI: APA91bGJCNtMPugyVM8iqw06ZT - CV8MFk7WDIykM1iSgVvSXX2dIazjxajvKWYzIVnDib3pqcviPReTcmlfC0ikNgySgFCYKlsdqlpCmjWxilKeGO4NTJ8mzc_jIYn3zyXBGj0F_DsjL
 
-            string defaultFullSharedAccessSignature = "Endpoint=sb://hbscr13.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=hS+NQ17Qu8CwNBVxzSWVY3ORJ4nK2lMNTFENbFc5Vck=";
-            string hubName = "hbPedidos";
-            
-            _hub = NotificationHubClient.CreateClientFromConnectionString(defaultFullSharedAccessSignature, hubName);
 
-            NotificationOutcome outcome = null;
 
-            // Android
-            var notif = "{ \"data\" : {\"message\":\"" + message +  " (idNotificacao="+ idNotificacao +") " + "\"}}";
-            outcome = await _hub.SendGcmNativeNotificationAsync(notif, userTag);
+        //    string defaultFullSharedAccessSignature = util.configTools.getConfig("hubnotificacao"); 
+        //    string hubName = "hbPedidos";                                                            
 
-            if (outcome != null)
-            {
-                if (!((outcome.State == NotificationOutcomeState.Abandoned) ||
-                    (outcome.State == NotificationOutcomeState.Unknown)))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+
+        //    _hub = NotificationHubClient.CreateClientFromConnectionString(defaultFullSharedAccessSignature, hubName);
+
+        //    NotificationOutcome outcome = null;
+
+        //    // Android
+        //    var notif = "{ \"data\" : {\"message\":\"" + message +  " (idNotificacao="+ idNotificacao +") " + "\"}}";
+        //    outcome = await _hub.SendGcmNativeNotificationAsync(notif, userTag);
+
+        //    if (outcome != null)
+        //    {
+        //        if (!((outcome.State == NotificationOutcomeState.Abandoned) ||
+        //            (outcome.State == NotificationOutcomeState.Unknown)))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
 
 
     }

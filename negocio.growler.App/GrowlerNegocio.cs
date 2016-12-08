@@ -7,6 +7,7 @@ using estrutura.growler;
 using estrutura.growler.App;
 using proxy.database;
 using Newtonsoft.Json;
+using estrutura;
 
 namespace negocio.growler.App
 {
@@ -289,7 +290,62 @@ namespace negocio.growler.App
         }
 
 
-        
+        public static string TesteNivel(int nivel)
+        {
+            if (nivel == 2)
+                return "Teste nivel Negocio OK";
+            else if (nivel == 3)
+            {
+                String sql = "select curdate() 'data', current_time() 'hora'";
+                return "Teste nivel BD -> " + JsonConvert.SerializeObject(ExecSql(sql));
+            }
+            else
+                return MySQLDB.connStr;
+
+        }
+
+
+
+
+        public static ltabela ExecSql(String strsql)
+        {
+
+            ltabela result = new ltabela();
+            
+
+            try
+            {
+                struturaExecSQL resultSQL = MySQLDB.execReader(strsql);
+
+                if (!resultSQL.erro)
+                {
+                    
+                    System.Data.Common.DbDataReader rs = resultSQL.Reader;
+                    while (rs.Read())
+                    {
+                        lcampo cp = new lcampo() { nome = "data", valor = rs["data"].ToString() };
+                        llinha ln = new llinha() { cp };
+                        result.Add(ln);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
+            return result;
+
+        }
+
+
+
+
 
 
     }

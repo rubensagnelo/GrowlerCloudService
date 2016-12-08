@@ -81,6 +81,10 @@
       <Project>{f863df2a-4306-4c1b-bd26-b3624117c278}</Project>
       <Name>estrutura.growler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\estrutura\estrutura.csproj">
+      <Project>{a1175685-55c6-41f1-b4d5-9cdcb2324462}</Project>
+      <Name>estrutura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\proxy.database\proxy.database.csproj">
       <Project>{777e555b-afce-41a0-b51c-8e2302359497}</Project>
       <Name>proxy.database</Name>
@@ -91,6 +95,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -71,6 +71,21 @@ namespace web.api.growler.App.Controllers
         }
 
 
+        [HttpGet]
+        public string TesteNivel(int nivel)
+        {
+            if (nivel == 1)
+                return "Camada controller OK";
+            else 
+            {
+                return GrowlerNegocio.TesteNivel(nivel);
+            }
+
+                
+
+        }
+
+
 
 
 
