@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.Azure.NotificationHubs;
-
+using Microsoft.Azure.NotificationHubs.Messaging;
 
 
 namespace proxy.database
@@ -59,18 +59,47 @@ namespace proxy.database
         }
 
 
-
         public static async Task<bool> SendNotificationAsync(string message, string idNotificacao)
         {
+
+
             string[] userTag = new string[1];
             userTag[0] = "";
 
             string defaultFullSharedAccessSignature = util.configTools.getConfig("hubnotificacao");
             string hubName = "hbGrowler1";
+            string handle = hubName;
 
             NotificationHubClient _hub = NotificationHubClient.CreateClientFromConnectionString(defaultFullSharedAccessSignature, hubName);
+            //await _hub.DeleteRegistrationAsync(idNotificacao);
+
+            //Excluindo registros
+            string newRegistrationId = null;
+            var registrations = await _hub.GetRegistrationsByChannelAsync(handle, 100);
+            foreach (RegistrationDescription xregistration in registrations)
+            {
+                if (newRegistrationId == null)
+                {
+                    newRegistrationId = xregistration.RegistrationId;
+                }
+                else
+                {
+                    await _hub.DeleteRegistrationAsync(xregistration);
+                }
+            }
+
+            if (newRegistrationId == null)
+                newRegistrationId = await _hub.CreateRegistrationIdAsync();
+
+            RegistrationDescription registration = new GcmRegistrationDescription(handle);
+
+
+            Task <GcmRegistrationDescription> gd = _hub.CreateGcmNativeRegistrationAsync(idNotificacao);
+            gd.Wait();
+
 
             NotificationOutcome outcome = null;
+
 
             // Android
             var notif = "{ \"data\" : {\"message\":\"" + message + "\"}}";
@@ -89,10 +118,51 @@ namespace proxy.database
 
 
 
+        //public static async Task<bool> SendNotificationAsync(string message, string idNotificacao)
+        //{
+
+
+        //    string[] userTag = new string[1];
+        //    userTag[0] = "";
+
+        //    string defaultFullSharedAccessSignature = util.configTools.getConfig("hubnotificacao");
+        //    string hubName = "hbGrowler1";
+
+        //    NotificationHubClient _hub = NotificationHubClient.CreateClientFromConnectionString(defaultFullSharedAccessSignature, hubName);
+
+        //    Task<GcmRegistrationDescription> gd = _hub.CreateGcmNativeRegistrationAsync(idNotificacao);
+        //    gd.Wait();
+
+
+        //    NotificationOutcome outcome = null;
+
+
+        //    // Android
+        //    var notif = "{ \"data\" : {\"message\":\"" + message + "\"}}";
+        //    outcome = await _hub.SendGcmNativeNotificationAsync(notif, userTag);
+
+        //    if (outcome != null)
+        //    {
+        //        if (!((outcome.State == NotificationOutcomeState.Abandoned) ||
+        //            (outcome.State == NotificationOutcomeState.Unknown)))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
+
+
+
 
     }
 
-
+    public class DeviceRegistration
+    {
+        public string Platform { get; set; }
+        public string Handle { get; set; }
+        public string[] Tags { get; set; }
+    }
 
 }
 
