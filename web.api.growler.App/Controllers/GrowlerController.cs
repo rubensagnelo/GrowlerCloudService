@@ -103,10 +103,14 @@ namespace web.api.growler.App.Controllers
 
         public static string getConfig(string key)
         {
-            string sufix = ".DEV";
+
 #if !DEBUG
-            sufix = ".PRD";
+            string sufix = ".PRD";
+
+#else
+           string sufix = ".DEV";
 #endif
+
             return System.Configuration.ConfigurationManager.AppSettings[new StringBuilder(key).Append(sufix).ToString()].ToString();
         }
 

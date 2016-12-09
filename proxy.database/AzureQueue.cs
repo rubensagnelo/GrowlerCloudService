@@ -65,20 +65,15 @@ namespace proxy.database
             string[] userTag = new string[1];
             userTag[0] = "";
 
-            //dHjXf2hZ0rI: APA91bGJCNtMPugyVM8iqw06ZT - CV8MFk7WDIykM1iSgVvSXX2dIazjxajvKWYzIVnDib3pqcviPReTcmlfC0ikNgySgFCYKlsdqlpCmjWxilKeGO4NTJ8mzc_jIYn3zyXBGj0F_DsjL
-
-
-
             string defaultFullSharedAccessSignature = util.configTools.getConfig("hubnotificacao");
-            string hubName = "hbPedidos";
-
+            string hubName = "hbGrowler1";
 
             NotificationHubClient _hub = NotificationHubClient.CreateClientFromConnectionString(defaultFullSharedAccessSignature, hubName);
 
             NotificationOutcome outcome = null;
 
             // Android
-            var notif = "{ \"data\" : {\"message\":\"" + message + " (idNotificacao=" + idNotificacao + ") " + "\"}}";
+            var notif = "{ \"data\" : {\"message\":\"" + message + "\"}}";
             outcome = await _hub.SendGcmNativeNotificationAsync(notif, userTag);
 
             if (outcome != null)

@@ -11,10 +11,14 @@ namespace util
 
         public static string getConfig(string key)
         {
-            string sufix = ".PRD";
+
 #if !DEBUG
-            sufix = ".PRD";
+            string sufix = ".PRD";
+
+#else
+           string sufix = ".DEV";
 #endif
+
             return System.Configuration.ConfigurationManager.AppSettings[new StringBuilder(key).Append(sufix).ToString()].ToString();
         }
 

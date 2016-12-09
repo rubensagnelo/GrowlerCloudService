@@ -43,6 +43,11 @@ namespace negocio.growler.Sensor
                 result.IdcErr = 1;
                 result.ExceptionMsg = ex.Message;
             }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
             return result;
 
         }

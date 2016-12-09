@@ -141,7 +141,7 @@ namespace workerRole.growler
                         if (System.Convert.ToDecimal(rg.Dados.Temperatura) <= System.Convert.ToDecimal(gr.TempIdeal))
                         {
                             string msg = "O Growler " + gr.IdGrowler + " atingiu a temperatura ideal." +
-                                " A temperatura atual do Growler é " + rg.Dados.Temperatura + " Graus.";
+                                " A temperatura atual do Growler é " + rg.Dados.Temperatura + " Graus. Aproveite!";
 
                             Trace.WriteLine(msg);
 
@@ -159,8 +159,12 @@ namespace workerRole.growler
                         Trace.WriteLine("Não existe nenhuma apuração de temperatura até o momento.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Trace.WriteLine("*** Erro no envio da notificação. ***");
+                Trace.WriteLine(ex.Message);
+                if (ex.InnerException != null)
+                    Trace.WriteLine(ex.InnerException.Message);
             }
 
             return result;

@@ -114,7 +114,7 @@ namespace negocio.growler.App
             String sql = "";
             try
             {
-                sql = "DELETE FROM GROWLER WHERE IDGROWLER='" + grl.IdGrowler+"'";
+                sql = "DELETE FROM GROWLER WHERE IDGROWLER='" + grl.IdGrowler + "'";
                 //System.out.println("SQL >" + sql);
                 //statement().executeUpdate(sql);
                 //System.out.println("info> Sucesso");
@@ -134,6 +134,11 @@ namespace negocio.growler.App
                 result.msg = "Não foi possível excluir o Growler " + grl.IdGrowler + ".";
                 return result;
             }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
 
             try
             {
@@ -159,6 +164,12 @@ namespace negocio.growler.App
                 return result;
 
             }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
+
 
             try
             {
@@ -184,6 +195,11 @@ namespace negocio.growler.App
                 return result;
 
             }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
 
             return result;
 
@@ -219,6 +235,11 @@ namespace negocio.growler.App
                 return result;
 
             }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
 
             return result;
         }
@@ -253,6 +274,11 @@ namespace negocio.growler.App
                 return result;
 
             }
+            finally
+            {
+                MySQLDB.Close();
+            }
+
 
 
             try
@@ -279,10 +305,15 @@ namespace negocio.growler.App
                 return result;
 
             }
+            finally
+            {
+                MySQLDB.Close();
+            }
 
-            
-            
-            
+
+
+
+
 
             return result;
 
