@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Microsoft.Azure.NotificationHubs;
 using negocio.growler.App;
 using estrutura.growler;
+using estrutura;
 
 namespace workerRole.growler
 {
@@ -128,36 +129,40 @@ namespace workerRole.growler
             try
             {
 
-                if (objque is GrowlerIni)
-                {
-                    GrowlerIni gr = ((GrowlerIni)objque);
-                    EstruturaRaizGrowler rg = GrowlerLogNegocio.ConsultarGrowlerAtual(gr.IdGrowler);
-
-                    if ((rg.Dados != null) && (rg.Dados.Id != "null"))
+                    //EstruturaNotificacao nt = (EstruturaNotificacao)objque;
+                    if (objque != null && objque is GrowlerIni)
                     {
-                        Trace.WriteLine("verificando temeratura ideal do Growler " + gr.IdGrowler + "." + "Tempreatura = " + rg.Dados.Temperatura + " Temperatura ideal = " + gr.TempIdeal + ".");
 
+                        GrowlerIni gr = ((GrowlerIni)objque);
+                        EstruturaRaizGrowler rg = GrowlerLogNegocio.ConsultarGrowlerAtual(gr.IdGrowler);
 
-                        if (System.Convert.ToDecimal(rg.Dados.Temperatura) <= System.Convert.ToDecimal(gr.TempIdeal))
+                        if ((rg.Dados != null) && (rg.Dados.Id != "null"))
                         {
-                            string msg = "O Growler " + gr.IdGrowler + " atingiu a temperatura ideal." +
-                                " A temperatura atual do Growler é " + rg.Dados.Temperatura + " Graus. Aproveite!";
+                            Trace.WriteLine("verificando temeratura ideal do Growler " + gr.IdGrowler + "." + "Tempreatura = " + rg.Dados.Temperatura + " Temperatura ideal = " + gr.TempIdeal + ".");
 
-                            Trace.WriteLine(msg);
 
-                            Task t = proxy.database.AzureQueue.SendNotificationAsync(msg, gr.IdNotificacao);
-                            t.Wait();
-                            result = true;
+                            if (System.Convert.ToDecimal(rg.Dados.Temperatura) <= System.Convert.ToDecimal(gr.TempIdeal))
+                            {
+                                string msg = "O Growler " + gr.IdGrowler + " atingiu a temperatura ideal." +
+                                    " A temperatura atual do Growler é " + rg.Dados.Temperatura + " Graus. Aproveite!";
 
-                            Trace.WriteLine("Notificação enviada para ID: " + gr.IdNotificacao + " .");
+                                Trace.WriteLine(msg);
 
-                            EstruturaRaiz er = GrowlerNegocio.ExcluirMonitoramento(gr.IdGrowler);
-                            if (er.IdcErr == 0)
-                                Trace.WriteLine(" Notificação " + gr.IdNotificacao + " do Growler " + gr.IdGrowler + " excluida da fila reserva.");
+                                Task t = proxy.database.AzureQueue.SendNotificationAsync(msg, gr.IdNotificacao);
+                                t.Wait();
+                                result = true;
+
+                                Trace.WriteLine("Notificação enviada para ID: " + gr.IdNotificacao + " .");
+
+                                EstruturaRaiz er = GrowlerNegocio.ExcluirMonitoramento(gr.IdGrowler);
+                                if (er.IdcErr == 0)
+                                    Trace.WriteLine(" Notificação " + gr.IdNotificacao + " do Growler " + gr.IdGrowler + " excluida da fila reserva.");
+                            }
                         }
-                    } else
-                        Trace.WriteLine("Não existe nenhuma apuração de temperatura até o momento.");
-                }
+                        else
+                            Trace.WriteLine("Não existe nenhuma apuração de temperatura até o momento.");
+                    }
+                
             }
             catch (Exception ex)
             {

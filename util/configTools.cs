@@ -16,7 +16,7 @@ namespace util
             string sufix = ".PRD";
 
 #else
-           string sufix = ".DEV";
+           string sufix = ".PRD";
 #endif
 
             return System.Configuration.ConfigurationManager.AppSettings[new StringBuilder(key).Append(sufix).ToString()].ToString();

@@ -94,6 +94,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\estrutura\estrutura.csproj">
+      <Project>{a1175685-55c6-41f1-b4d5-9cdcb2324462}</Project>
+      <Name>estrutura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\util\util.csproj">
       <Project>{ffd435a4-9b23-4ac7-8e2a-17892afae2d4}</Project>
       <Name>util</Name>

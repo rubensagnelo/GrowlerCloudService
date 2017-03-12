@@ -8,14 +8,21 @@ using MySql.Data.MySqlClient;
 
 namespace proxy.database
 {
-    public struct struturaExecSQL 
+    public struct struturaExecSQL
     {
         public Int64 linhasafetadas;
         public bool erro;
         public string mensagem;
         public string mensagemDetalhada;
         public System.Data.Common.DbDataReader Reader;
+
+        public void verificarErro()
+        {
+            if (erro)
+                throw new Exception(this.mensagem);
+        }
     }
+
 
     public class MySQLDB
     {
@@ -24,33 +31,27 @@ namespace proxy.database
         private static MySql.Data.MySqlClient.MySqlDataReader reader = null;
         private static MySql.Data.MySqlClient.MySqlConnection mconn = null;
 
-        public static string connStr { get { return util.configTools.getConfig("mysqldb");  } }
+        public static string connStr { get { return util.configTools.getConfig("mysqldb"); } }
 
         private static MySqlConnection dbMySQL()
         {
             MySql.Data.MySqlClient.MySqlConnection result = null;
-
-            
-
             try
             {
-                if (mconn==null || mconn.State!= ConnectionState.Open)
+                if (mconn == null || mconn.State != ConnectionState.Open)
                     mconn = new MySqlConnection(connStr);
 
                 if (mconn.State == ConnectionState.Closed)
                 {
                     mconn.Open();
                 }
-
                 result = mconn;
             }
             catch (MySqlException ex)
             {
                 throw ex;
             }
-
             return result;
-
         }
 
 
@@ -60,10 +61,8 @@ namespace proxy.database
         {
             Close();
             db = dbMySQL();
-
             struturaExecSQL result = new struturaExecSQL();
             reader = null;
-
             try
             {
                 MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, db);
@@ -85,29 +84,35 @@ namespace proxy.database
             }
             finally
             {
-
-
             }
-
             result.Reader = reader;
             return result;
-
         }
 
 
         public static void Close()
         {
-            try { if (reader != null) reader.Close(); } catch (Exception) { }
+            forceCloserReader();
+            forceCloserDataBase();
+        }
 
+
+        private static void forceCloserReader()
+        {
             try
             {
-                if (db != null && db.State == System.Data.ConnectionState.Open)
-                    db.Close();
+                reader.Close();
             }
-            catch (Exception) { }
+            catch { };
+        }
 
-
-
+        private static void forceCloserDataBase()
+        {
+            try
+            {
+                db.Close();
+            }
+            catch { };
         }
 
 
@@ -122,6 +127,10 @@ namespace proxy.database
             {
                 db = dbMySQL();
                 MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, db);
+
+                forceCloserReader();
+
+
                 linafe = cmd.ExecuteNonQuery();
 
                 result.linhasafetadas = linafe; //"0;OK;" + linafe.ToString();

@@ -324,6 +324,10 @@
       <Project>{f863df2a-4306-4c1b-bd26-b3624117c278}</Project>
       <Name>estrutura.growler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\estrutura\estrutura.csproj">
+      <Project>{a1175685-55c6-41f1-b4d5-9cdcb2324462}</Project>
+      <Name>estrutura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\negocio.growler.App\negocio.growler.App.csproj">
       <Project>{9a94042a-6754-4c64-af67-1a4e125087ad}</Project>
       <Name>negocio.growler.App</Name>

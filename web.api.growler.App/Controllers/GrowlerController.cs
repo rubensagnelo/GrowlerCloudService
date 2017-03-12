@@ -45,6 +45,15 @@ namespace web.api.growler.App.Controllers
 
             try
             {
+
+
+                /*estrutura.EstruturaNotificacao nt = new estrutura.EstruturaNotificacao();
+
+               nt.contexto.usuarioOrigem = System.Web.HttpContext.Current.User.Identity.Name;
+               nt.contexto.usuarioDestino = System.Web.HttpContext.Current.User.Identity.Name;
+               nt.DadosNotificacao = value;
+               */
+
                 AdicionarMensagem("notificacaogrowler", JsonConvert.SerializeObject(value));
             }
             catch (Exception ex)
