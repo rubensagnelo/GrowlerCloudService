@@ -9,7 +9,7 @@ namespace estrutura.growler.Sensor
     public class EstruturaRaizStatusSensor : EstruturaRaiz
     {
 
-        public EstruturaStatusSensor Dados;
+        public EstruturaStatusSensor Dados { get; set; }
 
         public EstruturaRaizStatusSensor(int idcErr, int codErr, EstruturaStatusSensor dados, String exceptionMsg)
         {

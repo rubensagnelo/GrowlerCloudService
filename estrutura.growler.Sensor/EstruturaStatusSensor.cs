@@ -8,8 +8,8 @@ namespace estrutura.growler.Sensor
 {
     public class EstruturaStatusSensor : EstruturaBase
     {
-        public String id;
-        public String temperatura;
-        public String bateria;
+        public String id { get; set; }
+        public String temperatura { get; set; }
+        public String bateria { get; set; }
     }
 }

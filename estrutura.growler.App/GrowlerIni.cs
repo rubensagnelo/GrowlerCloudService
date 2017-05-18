@@ -9,10 +9,10 @@ namespace estrutura.growler.App
 {
     public class GrowlerIni : EstruturaBase
     {
-        public String IdGrowler;
-        public String TempIdeal;
-        public String IndNotficacaoTemp;
-        public String IdNotificacao;
+        public String IdGrowler { get; set; }
+        public String TempIdeal { get; set; }
+        public String IndNotficacaoTemp { get; set; }
+        public String IdNotificacao { get; set; }
 
 
 

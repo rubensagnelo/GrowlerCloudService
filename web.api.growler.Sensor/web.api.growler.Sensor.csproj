@@ -316,6 +316,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\buildversion\buildversion.csproj">
+      <Project>{347f9afd-ac0e-4949-9c82-ce03d8bf8b33}</Project>
+      <Name>buildversion</Name>
+    </ProjectReference>
     <ProjectReference Include="..\estrutura.growler.Sensor\estrutura.growler.Sensor.csproj">
       <Project>{353d0344-0912-478e-aab3-6524ec7f4211}</Project>
       <Name>estrutura.growler.Sensor</Name>

@@ -14,6 +14,12 @@ namespace web.api.growler.Sensor.Controllers
     [RoutePrefix("api/growlersensor")]
     public class GrowlerSensorController : ApiController
     {
+        [System.Web.Http.HttpGet]
+        public string versao()
+        {
+            return buildversion.version.numver;
+        }
+
 
         [HttpPut]
         public HttpResponseMessage RegistraStatusGrowler(EstruturaStatusSensor value)

@@ -16,6 +16,7 @@ namespace proxy.database
         public string mensagemDetalhada;
         public System.Data.Common.DbDataReader Reader;
 
+
         public void verificarErro()
         {
             if (erro)
@@ -24,7 +25,7 @@ namespace proxy.database
     }
 
 
-    public class MySQLDB
+    public class MySQLDB : dbDriver
     {
 
         private static MySql.Data.MySqlClient.MySqlConnection db;
@@ -55,9 +56,12 @@ namespace proxy.database
         }
 
 
-
-
         public static struturaExecSQL execReader(string sql)
+        {
+            return execReader(sql, null);
+        }
+
+        public static struturaExecSQL execReader(string sql, List<MySqlParameter> parameters)
         {
             Close();
             db = dbMySQL();
@@ -66,6 +70,20 @@ namespace proxy.database
             try
             {
                 MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, db);
+
+                try { cmd.Parameters.Clear(); } catch { }
+
+                if (parameters != null)
+                {
+                    foreach (var item in parameters)
+                    {
+                        MySqlParameter par = new MySqlParameter(item.ParameterName, item.MySqlDbType);
+                        par.Value = item.Value;
+                        cmd.Parameters.Add(par);
+                    }
+                }
+
+
                 reader = cmd.ExecuteReader();
             }
             catch (Exception ex)
@@ -115,8 +133,12 @@ namespace proxy.database
             catch { };
         }
 
-
         public static struturaExecSQL execSQL(string sql)
+        {
+            return execSQL(sql, null);
+        }
+
+        public static struturaExecSQL execSQL(string sql, List<MySqlParameter> parameters)
         {
             //Int64 result = -1;
             struturaExecSQL result = new struturaExecSQL();
@@ -128,7 +150,19 @@ namespace proxy.database
                 db = dbMySQL();
                 MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, db);
 
+                try{cmd.Parameters.Clear();}catch{}
+
                 forceCloserReader();
+
+                if (parameters != null)
+                {
+                    foreach (var item in parameters)
+                    {
+                        MySqlParameter par = new MySqlParameter(item.ParameterName, item.MySqlDbType);
+                        par.Value = item.Value;
+                        cmd.Parameters.Add(par);
+                    }
+                }
 
 
                 linafe = cmd.ExecuteNonQuery();
@@ -154,7 +188,7 @@ namespace proxy.database
             }
             finally
             {
-
+                
                 try
                 {
                     if (db != null && db.State == System.Data.ConnectionState.Open)

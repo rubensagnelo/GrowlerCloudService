@@ -10,10 +10,10 @@ namespace estrutura.growler.App
 
     public class GrowlerMon : EstruturaBase
     {
-        public String IdGrowler;
-        public String DataGravacao;
-        public String IdNotificacao;
-        public String DataNotificacao;
+        public String IdGrowler { get; set; }
+        public String DataGravacao { get; set; }
+        public String IdNotificacao { get; set; }
+        public String DataNotificacao { get; set; }
 
 
         public GrowlerMon()

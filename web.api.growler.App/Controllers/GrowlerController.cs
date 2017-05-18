@@ -18,6 +18,12 @@ namespace web.api.growler.App.Controllers
     public class GrowlerController : ApiController
     {
 
+        [System.Web.Http.HttpGet]
+        public string versao()
+        {
+            return buildversion.version.numver;
+        }
+
 
         [System.Web.Http.HttpGet]
         public HttpResponseMessage LerGarrafas()
@@ -78,23 +84,6 @@ namespace web.api.growler.App.Controllers
         {
             return execResponse(GrowlerNegocio.EsvaziarGrowler(id));
         }
-
-
-        [HttpGet]
-        public string TesteNivel(int nivel)
-        {
-            if (nivel == 1)
-                return "Camada controller OK";
-            else 
-            {
-                return GrowlerNegocio.TesteNivel(nivel);
-            }
-
-                
-
-        }
-
-
 
 
 

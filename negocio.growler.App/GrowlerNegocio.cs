@@ -8,6 +8,8 @@ using estrutura.growler.App;
 using proxy.database;
 using Newtonsoft.Json;
 using estrutura;
+using MySql.Data.MySqlClient;
+using System.Globalization;
 
 namespace negocio.growler.App
 {
@@ -15,28 +17,31 @@ namespace negocio.growler.App
     {
         public static EstruturaRaiz EsvaziarGrowler(String idGrowler)
         {
+            MySQLDB.validainjecaoSQL(idGrowler);
+
             EstruturaRaiz result = new EstruturaRaiz();
             String sql = "";
 
+            List<MySqlParameter> prm = new List<MySqlParameter>();
+            MySqlParameter pr = new MySqlParameter("@IDGROWLER", MySqlDbType.String);
+            pr.Value = idGrowler;
+            prm.Add(pr);
+
+
             try
             {
-                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER='" + idGrowler+"'";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER=@IDGROWLER";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql,prm);
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
-                //System.out.println("info> Sucesso");
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
                 result.CodErr = 4;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível excluir o Growler " + idGrowler + ".";
+                result.msg = $"Não foi possível excluir o Growler {idGrowler}.";
                 return result;
             }
             finally
@@ -47,19 +52,14 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER='" + idGrowler + "'";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER=@IDGROWLER";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql,prm);
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
-                //System.out.println("info> Sucesso");
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
                 result.CodErr = 4;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
@@ -75,24 +75,19 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "UPDATE GROWLER SET IDCMON=0 WHERE IDGROWLER='" + idGrowler +"'";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
-                //System.out.println("info> Sucesso");
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+                sql = "UPDATE GROWLER SET IDCMON=0 WHERE IDGROWLER=@IDGROWLER";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql, prm);
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
 
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
                 result.CodErr = 4;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível excluir o Growler " + idGrowler + ".";
+                result.msg = $"Não foi possível excluir o Growler {idGrowler}.";
                 return result;
             }
             finally
@@ -110,28 +105,35 @@ namespace negocio.growler.App
 
         public static EstruturaRaiz iniciargrowler(GrowlerIni grl)
         {
+
+            MySQLDB.validaEtruturaInjecaoSQL(grl);
+
+
             EstruturaRaiz result = new EstruturaRaiz();
             String sql = "";
+
             try
             {
-                sql = "DELETE FROM GROWLER WHERE IDGROWLER='" + grl.IdGrowler + "'";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate(sql);
-                //System.out.println("info> Sucesso");
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+
+                List<MySqlParameter> prm = new List<MySqlParameter>();
+
+                MySqlParameter pr = new MySqlParameter("@IDGROWLER", MySqlDbType.String);
+                pr.Value = grl.IdGrowler;
+                prm.Add(pr);
+
+
+                sql = "DELETE FROM GROWLER WHERE IDGROWLER=@IDGROWLER";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql,prm);
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
-                //return "1";
                 result.CodErr = 5;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível excluir o Growler " + grl.IdGrowler + ".";
+                result.msg = $"Não foi possível excluir o Growler {grl.IdGrowler}.";
                 return result;
             }
             finally
@@ -140,27 +142,47 @@ namespace negocio.growler.App
             }
 
 
+
+
             try
             {
-                sql = "INSERT INTO GROWLER (IDGROWLER, VLRTMPIDEGROWLER, IDCALATMP, IDCMON) VALUES ('" + grl.IdGrowler + "'," + grl.TempIdeal + "," + grl.IndNotficacaoTemp + ",1)";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate(sql);
-                //System.out.println("info> Sucesso");
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+
+                List<MySqlParameter> prm = new List<MySqlParameter>();
+
+                MySqlParameter pr = new MySqlParameter("@IDGROWLER", MySqlDbType.String);
+                pr.Value = grl.IdGrowler;
+                prm.Add(pr);
+
+
+                //Valorado por causa da formatação decimal como americana (ponto no separador decimal)
+                CultureInfo current = CultureInfo.DefaultThreadCurrentCulture;
+                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+
+                MySqlParameter pr2 = new MySqlParameter("@TEMPIDEAL", MySqlDbType.Decimal);
+                pr2.Value = grl.TempIdeal;
+                prm.Add(pr2);
+
+
+                MySqlParameter pr3 = new MySqlParameter("@INDNOTFICACAOTEMP", MySqlDbType.Int32);
+                pr3.Value = grl.IndNotficacaoTemp;
+                prm.Add(pr3);
+
+                sql = "INSERT INTO GROWLER (IDGROWLER, VLRTMPIDEGROWLER, IDCALATMP, IDCMON) VALUES (@IDGROWLER , @TEMPIDEAL , @INDNOTFICACAOTEMP ,1)";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql, prm);
+
+                //retornado a cultura original após a insersão do valor com separador decimal
+                CultureInfo.DefaultThreadCurrentCulture = current;
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
 
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
-                //return "1";
                 result.CodErr = 6;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível incluir o Growler " + grl.IdGrowler + ".";
+                result.msg = $"Não foi possível incluir o Growler {grl.IdGrowler}.";
                 return result;
 
             }
@@ -173,25 +195,26 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER='" + grl.IdGrowler+"'";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate("DELETE FROM GROWLER_LOG WHERE IDGROWLER=" + idGrowler);
-                //System.out.println("info> Sucesso");
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+
+                List<MySqlParameter> prm = new List<MySqlParameter>();
+
+                MySqlParameter pr = new MySqlParameter("@IDGROWLER", MySqlDbType.String);
+                pr.Value = grl.IdGrowler;
+                prm.Add(pr);
+
+                sql = "DELETE FROM GROWLER_LOG WHERE IDGROWLER=@IDGROWLER";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql,prm);
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
 
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
-                //return "1";
                 result.CodErr = 7;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível incluir o hitórico do Growler " + grl.IdGrowler + ".";
+                result.msg = $"Não foi possível incluir o hitórico do Growler {grl.IdGrowler}.";
                 return result;
 
             }
@@ -208,38 +231,40 @@ namespace negocio.growler.App
 
         public static EstruturaRaiz ExcluirMonitoramento(string IdGrowler)
         {
+
+            MySQLDB.validainjecaoSQL(IdGrowler);
+
+
             EstruturaRaiz result = new EstruturaRaiz();
             String sql = "";
 
             try
             {
-                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER = '" + IdGrowler + "'";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate(sql);
-                //System.out.println("info> Sucesso");
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+
+                List<MySqlParameter> prm = new List<MySqlParameter>();
+                MySqlParameter pr = new MySqlParameter("@IDGROWLER", MySqlDbType.String);
+                pr.Value = IdGrowler;
+                prm.Add(pr);
+
+                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER=@IDGROWLER";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql, prm);
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
 
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
-                //return "1";
                 result.CodErr = 6;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível excluir a solicitação de monitoração do Growler " + IdGrowler + ".";
+                result.msg = $"Não foi possível excluir a solicitação de monitoração do Growler{IdGrowler}.";
                 return result;
-
             }
             finally
             {
                 MySQLDB.Close();
             }
-
 
             return result;
         }
@@ -247,30 +272,32 @@ namespace negocio.growler.App
 
         public static EstruturaRaiz SolicitarMonitoramentoGrowler(GrowlerMon value)
         {
+            MySQLDB.validaEtruturaInjecaoSQL(value);
+
             EstruturaRaiz result = new EstruturaRaiz();
             String sql = "";
 
             try
             {
-                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER = '" + value.IdGrowler + "'";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate(sql);
-                //System.out.println("info> Sucesso");
-                struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
+
+                List<MySqlParameter> prm = new List<MySqlParameter>();
+                MySqlParameter pr = new MySqlParameter("@IDGROWLER", MySqlDbType.String);
+                pr.Value = value.IdGrowler;
+                prm.Add(pr);
+
+                sql = "DELETE FROM GROWLER_MON WHERE IDGROWLER=@IDGROWLER";
+                struturaExecSQL resultSQL = MySQLDB.execSQL(sql, prm);
+
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
 
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
-                //return "1";
                 result.CodErr = 6;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível excluir a solicitação de monitoração do Growler " + value.IdGrowler + ".";
+                result.msg = $"Não foi possível excluir a solicitação de monitoração do Growler {value.IdGrowler}.";
                 return result;
 
             }
@@ -283,10 +310,16 @@ namespace negocio.growler.App
 
             try
             {
-                sql = "INSERT INTO GROWLER_MON (IDGROWLER, DTAGRAVACAO, IDNOTIFICACAO) VALUES ('" + value.IdGrowler + "', CURRENT_TIMESTAMP, '" + value.IdNotificacao + "')";
-                //System.out.println("SQL >" + sql);
-                //statement().executeUpdate(sql);
-                //System.out.println("info> Sucesso");
+                List<MySqlParameter> prm = new List<MySqlParameter>();
+                MySqlParameter pr = new MySqlParameter("@IDGROWLER", MySqlDbType.String);
+                pr.Value = value.IdGrowler;
+                prm.Add(pr);
+
+                MySqlParameter pr2 = new MySqlParameter("@IDNOTIFICACAO", MySqlDbType.String);
+                pr2.Value = value.IdNotificacao;
+                prm.Add(pr2);
+
+                sql = "INSERT INTO GROWLER_MON (IDGROWLER, DTAGRAVACAO, IDNOTIFICACAO) VALUES (@IDGROWLER, CURRENT_TIMESTAMP, @IDNOTIFICACAO)";
                 struturaExecSQL resultSQL = MySQLDB.execSQL(sql);
                 if (resultSQL.erro)
                     throw new Exception(resultSQL.mensagemDetalhada);
@@ -294,76 +327,11 @@ namespace negocio.growler.App
             }
             catch (Exception ex)
             {
-                //System.out.println("info> ERRO");
-                //showSQLException(e);
-                //e.printStackTrace();
-                //return "1";
                 result.CodErr = 6;
                 result.ExceptionMsg = ex.Message;
                 result.IdcErr = 1;
-                result.msg = "Não foi possível registrar a solicitação de monitoração do Growler " + value.IdGrowler + ".";
+                result.msg = $"Não foi possível registrar a solicitação de monitoração do Growler {value.IdGrowler}.";
                 return result;
-
-            }
-            finally
-            {
-                MySQLDB.Close();
-            }
-
-
-
-
-
-
-            return result;
-
-
-        }
-
-
-        public static string TesteNivel(int nivel)
-        {
-            if (nivel == 2)
-                return "Teste nivel Negocio OK";
-            else if (nivel == 3)
-            {
-                String sql = "select curdate() 'data', current_time() 'hora'";
-                return "Teste nivel BD -> " + JsonConvert.SerializeObject(ExecSql(sql));
-            }
-            else
-                return MySQLDB.connStr;
-
-        }
-
-
-
-
-        public static ltabela ExecSql(String strsql)
-        {
-
-            ltabela result = new ltabela();
-            
-
-            try
-            {
-                struturaExecSQL resultSQL = MySQLDB.execReader(strsql);
-
-                if (!resultSQL.erro)
-                {
-                    
-                    System.Data.Common.DbDataReader rs = resultSQL.Reader;
-                    while (rs.Read())
-                    {
-                        lcampo cp = new lcampo() { nome = "data", valor = rs["data"].ToString() };
-                        llinha ln = new llinha() { cp };
-                        result.Add(ln);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {
@@ -373,11 +341,6 @@ namespace negocio.growler.App
             return result;
 
         }
-
-
-
-
-
 
     }
 }

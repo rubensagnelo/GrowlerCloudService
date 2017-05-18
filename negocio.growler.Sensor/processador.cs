@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using proxy.database;
 using estrutura.growler.Sensor;
 using estrutura.growler;
+using MySql.Data.MySqlClient;
 
 namespace negocio.growler.Sensor
 {
@@ -14,6 +15,8 @@ namespace negocio.growler.Sensor
 
         public static EstruturaRaiz RegistraStatusGrowler(EstruturaStatusSensor ent)
         {
+            MySQLDB.validaEtruturaInjecaoSQL(ent);
+
             EstruturaRaiz result = new EstruturaRaiz();
             StringBuilder sql = new StringBuilder(string.Empty);
             try
@@ -21,12 +24,16 @@ namespace negocio.growler.Sensor
                 sql.Append("INSERT INTO GROWLER_LOG ");
                 sql.Append("(IDGROWLER, TMPGROWLER, BATGROWLER, DTALOGGROWLER) ");
                 sql.Append("VALUES(");
-                sql.Append("'").Append(ent.id).Append("'").Append(", ");
-                sql.Append(ent.temperatura).Append(", ");
-                sql.Append(ent.bateria).Append(", ");
+                sql.Append("@id, @temperatura, @bateria,");
                 sql.Append(" CURRENT_TIMESTAMP)");
 
-                struturaExecSQL estSql = MySQLDB.execSQL(sql.ToString());
+                //Parametros
+                List<MySqlParameter> prm = new List<MySqlParameter>();
+                prm.Add(new MySqlParameter("@id", ent.id));
+                prm.Add(new MySqlParameter("@temperatura", ent.temperatura));
+                prm.Add(new MySqlParameter("@bateria", ent.bateria));
+
+                struturaExecSQL estSql = MySQLDB.execSQL(sql.ToString(),prm);
                 if (estSql.erro)
                 {
                     result.IdcErr = 1;
